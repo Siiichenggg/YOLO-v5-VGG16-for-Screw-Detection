@@ -1,0 +1,6 @@
+[core]
+disable_usage_reporting = False
+
+[accessibility]
+screen_reader = True
+

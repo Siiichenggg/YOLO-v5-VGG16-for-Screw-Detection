@@ -1,0 +1,131 @@
+- release_tracks: [ALPHA, BETA, GA]
+
+  help_text:
+    brief: |
+      Update Memorystore Cluster for Redis instance.
+    description: |
+      Update the metadata and/or configuration parameters of a Redis cluster.
+
+      This command can fail for the following reasons:
+        * The cluster specified does not exist.
+        * The active account does not have permission to update the given
+          cluster.
+    examples: |
+      To update a Redis cluster with 5 shard and 2 replica, run:
+
+        $ {command} my-redis-cluster --shard-count=5 --replica-count=2
+
+  arguments:
+    resource:
+      spec: !REF googlecloudsdk.command_lib.redis.resources:cluster
+      help_text: |
+        Arguments and flags that specify the Memorystore Redis cluster you want to update.
+    params:
+    - arg_name: replica-count
+      api_field: cluster.replicaCount
+      type: int
+      help_text: |
+        The replica count of each shard.
+    - arg_name: shard-count
+      api_field: cluster.shardCount
+      type: int
+      help_text: |
+        The shard count of the cluster.
+    - arg_name: deletion-protection
+      api_field: cluster.deletionProtectionEnabled
+      type: bool
+      release_tracks: [ALPHA, BETA]
+      hidden: true
+      help_text: |
+        Enable Delete Protection on the Redis Cluster to prevent accidental deletions.
+        Use --deletion-protection to enabled and --no-deletion-protection to disable.
+    - arg_name: persistence-mode
+      api_field: cluster.persistenceConfig.mode
+      help_text: |
+        Operation mode for persistence.
+      choices:
+      - enum_value: DISABLED
+        arg_value: disabled
+        help_text: Persistence mode is disabled
+      - enum_value: RDB
+        arg_value: RDB
+        help_text: RDB-based persistence
+      - enum_value: AOF
+        arg_value: AOF
+        help_text: AOF-based persistence
+    - arg_name: rdb-snapshot-period
+      api_field: cluster.persistenceConfig.rdbConfig.rdbSnapshotPeriod
+      help_text: |
+        Attempted period between RDB snapshots.
+      choices:
+      - enum_value: ONE_HOUR
+        arg_value: 1h
+        help_text: 1 hour
+      - enum_value: SIX_HOURS
+        arg_value: 6h
+        help_text: 6 hours
+      - enum_value: TWELVE_HOURS
+        arg_value: 12h
+        help_text: 12 hours
+      - enum_value: TWENTY_FOUR_HOURS
+        arg_value: 24h
+        help_text: (default) 24 hours
+    - arg_name: rdb-snapshot-start-time
+      api_field: cluster.persistenceConfig.rdbConfig.rdbSnapshotStartTime
+      help_text: |
+        Date and time of the first snapshot in the ISO 1801 format, and alignment time for future snapshots. For example, 2024-01-01T01:00:00Z.
+        If not specified, the current time will be used.
+    - arg_name: aof-append-fsync
+      api_field: cluster.persistenceConfig.aofConfig.appendFsync
+      help_text: |
+        Fsync configuration.
+      choices:
+      - enum_value: NO  # yamllint disable-line rule:truthy
+        arg_value: no  # yamllint disable-line rule:truthy
+        help_text: |
+          Redis will not explicitly call fsync.
+      - enum_value: EVERYSEC
+        arg_value: everysec
+        help_text: |
+          (default) Redis explicitly calls fsync every second.
+      - enum_value: ALWAYS
+        arg_value: always
+        help_text: |
+          Redis explicitly calls fsync for every write command.
+    additional_arguments_hook: googlecloudsdk.command_lib.redis.cluster_util:AdditionalClusterUpdateArguments
+
+  async:
+    collection: redis.projects.locations.operations
+
+  request:
+    ALPHA:
+      api_version: v1alpha1
+      modify_request_hooks:
+      - googlecloudsdk.command_lib.redis.clusters_update_util:UpdateReplicaCount
+      - googlecloudsdk.command_lib.redis.clusters_update_util:UpdateShardCount
+      - googlecloudsdk.command_lib.redis.clusters_update_util:UpdateDeletionProtection
+      - googlecloudsdk.command_lib.redis.clusters_update_util:UpdatePersistenceConfig
+      - googlecloudsdk.command_lib.redis.clusters_update_util:RemoveRedisConfigs
+      - googlecloudsdk.command_lib.redis.clusters_update_util:UpdateRedisConfigs
+    BETA:
+      api_version: v1beta1
+      modify_request_hooks:
+      - googlecloudsdk.command_lib.redis.clusters_update_util:UpdateReplicaCount
+      - googlecloudsdk.command_lib.redis.clusters_update_util:UpdateShardCount
+      - googlecloudsdk.command_lib.redis.clusters_update_util:UpdateDeletionProtection
+      - googlecloudsdk.command_lib.redis.clusters_update_util:UpdatePersistenceConfig
+      - googlecloudsdk.command_lib.redis.clusters_update_util:RemoveRedisConfigs
+      - googlecloudsdk.command_lib.redis.clusters_update_util:UpdateRedisConfigs
+    GA:
+      api_version: v1
+      modify_request_hooks:
+      - googlecloudsdk.command_lib.redis.clusters_update_util:UpdateReplicaCount
+      - googlecloudsdk.command_lib.redis.clusters_update_util:UpdateShardCount
+      - googlecloudsdk.command_lib.redis.clusters_update_util:UpdatePersistenceConfig
+      - googlecloudsdk.command_lib.redis.clusters_update_util:RemoveRedisConfigs
+      - googlecloudsdk.command_lib.redis.clusters_update_util:UpdateRedisConfigs
+    collection: redis.projects.locations.clusters
+
+  update:
+    read_modify_update: true
+    disable_auto_field_mask: true

@@ -1,0 +1,36 @@
+- release_tracks: [ALPHA, BETA]
+
+  help_text:
+    brief: List all Privileged Access Manager (PAM) long running operations under a location.
+    description: List all Privileged Access Manager (PAM) long running operations under a project/folder/organization location.
+    examples: |
+      The following command lists all operations under a project `sample-project` and location
+      `global`:
+
+      $ {command} --project=sample-project --location=global
+
+      The following command list all operations under a folder `sample-folder` and location
+      `global`:
+
+      $ {command} --folder=sample-folder --location=global
+
+      The following command list all operations under an organization `sample-organization` and
+      location `global`:
+
+      $ {command} --organization=sample-organization --location=global
+
+  request:
+    ALPHA:
+      api_version: v1alpha
+    BETA:
+      api_version: v1beta
+    collection:
+    - privilegedaccessmanager.projects.locations.operations
+    - privilegedaccessmanager.folders.locations.operations
+    - privilegedaccessmanager.organizations.locations.operations
+
+  arguments:
+    resource:
+      spec: !REF googlecloudsdk.command_lib.pam.resources:location
+      help_text: |
+        Location under which the operations are to be listed.

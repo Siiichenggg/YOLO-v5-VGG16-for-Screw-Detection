@@ -1,0 +1,53 @@
+- release_tracks: [ALPHA, BETA]
+
+  help_text:
+    brief: Update an existing Privileged Access Manager (PAM) entitlement.
+    description: Update an existing Privileged Access Manager (PAM) entitlement.
+    examples: |
+      The following command updates an entitlement with the full name ``ENTITLEMENT_NAME'' and the
+      new entitlement body present in the `sample-entitlement.yaml` file:
+
+      $ {command} ENTITLEMENT_NAME --entitlement-file=sample-entitlement.yaml
+
+  request:
+    ALPHA:
+      api_version: v1alpha
+    BETA:
+      api_version: v1beta
+    collection:
+    - privilegedaccessmanager.projects.locations.entitlements
+    - privilegedaccessmanager.folders.locations.entitlements
+    - privilegedaccessmanager.organizations.locations.entitlements
+    modify_request_hooks:
+    - googlecloudsdk.command_lib.pam.util:SetUpdateMaskInUpdateEntitlementRequest
+
+  arguments:
+    resource:
+      spec: !REF googlecloudsdk.command_lib.pam.resources:entitlement
+      help_text: |
+        Name of the entitlement to update.
+    params:
+    - arg_name: entitlement-file
+      api_field: entitlement
+      required: true
+      type: "googlecloudsdk.calliope.arg_parsers:FileContents:"
+      processor: googlecloudsdk.core.yaml:load
+      help_text: |
+        YAML file containing the new body of the entitlement.
+
+  async:
+    ALPHA:
+      api_version: v1alpha
+    BETA:
+      api_version: v1beta
+    collection:
+    - privilegedaccessmanager.projects.locations.operations
+    - privilegedaccessmanager.folders.locations.operations
+    - privilegedaccessmanager.organizations.locations.operations
+
+  output:
+    format: yaml
+
+  input:
+    confirmation_prompt: |
+      Only new grants created under the entitlement will be affected by the changes.

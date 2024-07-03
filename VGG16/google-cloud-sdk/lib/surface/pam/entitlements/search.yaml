@@ -1,0 +1,69 @@
+- release_tracks: [ALPHA, BETA]
+
+  command_type: LIST
+
+  help_text:
+    brief: Search and list all Privileged Access Manager (PAM) entitlements under a parent for which you are either a requester or an approver.
+    description: Search and list all Privileged Access Manager (PAM) entitlements under a project/folder/organization location for which you are either a requester or an approver.
+    examples: |
+      The following command searches and lists all entitlements under a project `sample-project` and
+      location `global` for which you are a requester:
+
+      $ {command} --project=sample-project --location=global --caller-access-type=grant-requester
+
+      The following command searches and lists all entitlements under a project `sample-project` and
+      location `global` for which you are an approver:
+
+      $ {command} --project=sample-project --location=global --caller-access-type=grant-approver
+
+      The following command searches and lists all entitlements under a folder `sample-folder` and
+      location `global` for which you are a requester:
+
+      $ {command} --folder=sample-folder --location=global --caller-access-type=grant-requester
+
+      The following command searches and lists all entitlements under a folder `sample-folder` and
+      location `global` for which you are an approver:
+
+      $ {command} --folder=sample-folder --location=global --caller-access-type=grant-approver
+
+      The following command searches and lists all entitlements under an organization
+      `sample-organization` and location `global` for which you are a requester:
+
+      $ {command} --organization=sample-organization --location=global --caller-access-type=grant-requester
+
+      The following command searches and lists all entitlements under an organization
+      `sample-organization` and location `global` for which you are an approver:
+
+      $ {command} --organization=sample-organization --location=global --caller-access-type=grant-approver
+
+  request:
+    ALPHA:
+      api_version: v1alpha
+    BETA:
+      api_version: v1beta
+    method: search
+    collection:
+    - privilegedaccessmanager.projects.locations.entitlements
+    - privilegedaccessmanager.folders.locations.entitlements
+    - privilegedaccessmanager.organizations.locations.entitlements
+
+  arguments:
+    params:
+    - arg_name: location
+      resource_spec: !REF googlecloudsdk.command_lib.pam.resources:location
+      is_parent_resource: true
+      is_primary_resource: true
+      is_positional: false
+      required: true
+      help_text: |
+        Location under which the entitlements are to be listed.
+    - api_field: callerAccessType
+      arg_name: caller-access-type
+      required: true
+      choices:
+      - arg_value: grant-requester
+        enum_value: GRANT_REQUESTER
+      - arg_value: grant-approver
+        enum_value: GRANT_APPROVER
+      help_text: |
+        Whether to search the entitlements for which you are a requester or approver.
