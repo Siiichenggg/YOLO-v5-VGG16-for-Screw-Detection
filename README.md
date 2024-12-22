@@ -19,5 +19,3 @@ This project combines YOLOv5 and VGG16 models to achieve screw detection and con
 *   **VGG16:** Used for image classification (screw condition recognition).
 *   **Python:** Primary programming language.
 *   **PyTorch:** Deep learning framework.
-
-I hope this optimized README file is helpful!
